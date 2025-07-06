@@ -44,12 +44,13 @@ jobs:
       - name: Start containers
         run: docker compose up -d
 
-      - name: Run tests
-        run: docker compose exec app sh -c "python manage.py wait_for_db && python manage.py test"
+      - name: Wait for DB to be ready
+        run: |
+          docker compose run --rm app sh -c "python manage.py wait_for_db"
 
-      - name: Tear down containers
-        if: always()
-        run: docker compose down
+      - name: Run tests
+        run: docker compose run --rm app sh -c "python manage.py test"
+
 
 #    - name: Lint # pep8 파이썬 코드 스타일 가이드 준수 여부 검사
 #      run: docker compose run --rm app sh -c "flake8"
